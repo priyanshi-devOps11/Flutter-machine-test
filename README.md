@@ -220,3 +220,30 @@ Issue: Dependencies not resolving
 
 flutter clean
 flutter pub get
+
+**Issue:** Build fails
+```bash
+flutter clean
+flutter pub get
+flutter pub upgrade
+```
+
+### Android Issues
+
+**Issue:** Gradle sync fails
+```bash
+./gradlew clean
+./gradlew build --refresh-dependencies
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create feature branch
+3. Commit changes
+4. Push to branch
+5. Create Pull Request
+
+## License
+
+---

@@ -1,4 +1,4 @@
-package com.example.getcalley.activities;
+package com.example.get_calley_test.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,7 +6,7 @@ import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.getcalley.R;
+import com.example.get_calley_testy.R;
 
 public class LanguageSelectActivity extends AppCompatActivity {
 

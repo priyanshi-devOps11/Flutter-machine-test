@@ -1,4 +1,4 @@
-package com.yourname.getcalley.activities;
+package com.example.get_calley_test.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,11 +11,11 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.yourname.getcalley.R;
-import com.yourname.getcalley.models.ApiResponse;
-import com.yourname.getcalley.models.OtpRequest;
-import com.yourname.getcalley.models.RegisterRequest;
-import com.yourname.getcalley.network.RetrofitClient;
+import com.example.get_calley_test.R;
+import com.example.get_calley_test.models.ApiResponse;
+import com.example.get_calley_test.models.OtpRequest;
+import com.example.get_calley_test.models.RegisterRequest;
+import com.example.get_calley_test.network.RetrofitClient;
 
 import retrofit2.Call;
 import retrofit2.Callback;

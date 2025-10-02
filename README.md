@@ -1,6 +1,6 @@
 # Get Calley - Call Management Application
 
-A comprehensive call management solution built with **Flutter 4** and **native Android (Java)**.
+A comprehensive call management solution built with **Flutter** and **native Android (Java)**.
 
 ---
 

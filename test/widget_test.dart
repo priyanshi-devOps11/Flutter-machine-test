@@ -1,30 +1,36 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:get_calley_test/main.dart';
+import 'package:get_calley_test/api_service_test.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('Splash screen shows and navigates to Register',
+      (WidgetTester tester) async {
+    // Build the app
+    await tester.pumpWidget(MyApp());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Initially, we expect splash text or logo to appear
+    expect(find.text('Get Calley'), findsOneWidget);
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    // Let the splash screen finish (simulate a few seconds)
+    await tester.pump(const Duration(seconds: 3));
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // After splash, app should navigate to Register screen
+    expect(find.text('Register'), findsOneWidget);
+  });
+
+  testWidgets('Register screen shows form fields', (WidgetTester tester) async {
+    await tester.pumpWidget(MyApp());
+
+    // Skip splash
+    await tester.pump(const Duration(seconds: 3));
+
+    // Check that Name and Email fields exist
+    expect(find.byType(TextFormField), findsNWidgets(2));
+    expect(find.text('Name'), findsOneWidget);
+    expect(find.text('Email'), findsOneWidget);
+
+    // Check that "Send OTP" button exists
+    expect(find.text('Send OTP'), findsOneWidget);
   });
 }

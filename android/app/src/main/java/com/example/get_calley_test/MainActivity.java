@@ -11,8 +11,8 @@ import android.os.Looper;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.yourname.getcalley.R;
-import com.yourname.getcalley.utils.PreferencesManager;
+import com.example.getcalley.R;
+import com.example.getcalley.utils.PreferencesManager;
 
 public class MainActivity extends AppCompatActivity {
     private static final int SPLASH_DELAY = 2000; // 2 seconds

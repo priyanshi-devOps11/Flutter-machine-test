@@ -1,4 +1,4 @@
-package com.yourname.getcalley.models;
+package com.example.get_calley_test.models;
 public class RegisterRequest {
     private String name;
     private String email;

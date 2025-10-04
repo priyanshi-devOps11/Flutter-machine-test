@@ -4,7 +4,10 @@ import 'screens/language_select.dart';
 import 'screens/register.dart';
 import 'screens/otp_verify.dart';
 import 'screens/login.dart';
+import 'screens/home.dart';
 import 'screens/dashboard.dart';
+import 'screens/dashboard_home.dart';
+import 'screens/call_history.dart';
 
 class GetCalleyApp extends StatelessWidget {
   const GetCalleyApp({super.key});
@@ -22,6 +25,7 @@ class GetCalleyApp extends StatelessWidget {
           seedColor: const Color(0xFF007AFF),
           primary: const Color(0xFF007AFF),
         ),
+        useMaterial3: true,
       ),
       home: const SplashScreen(),
       routes: {
@@ -29,7 +33,10 @@ class GetCalleyApp extends StatelessWidget {
         '/register': (context) => const RegisterScreen(),
         '/otp': (context) => const OtpVerifyScreen(),
         '/login': (context) => const LoginScreen(),
+        '/home': (context) => const HomeScreen(),
         '/dashboard': (context) => const DashboardScreen(),
+        '/dashboard-home': (context) => const DashboardHomeScreen(),
+        '/call-history': (context) => const CallHistoryScreen(),
       },
     );
   }

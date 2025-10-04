@@ -391,6 +391,12 @@ class _CallHistoryScreenState extends State<CallHistoryScreen> {
   }
 }
 
+extension on Color {
+  get shade700 => null;
+
+  get shade600 => null;
+}
+
 enum CallStatus { completed, missed }
 
 class CallRecord {

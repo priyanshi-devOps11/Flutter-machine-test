@@ -69,7 +69,7 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
     if (success) {
       Navigator.of(context).pushNamedAndRemoveUntil(
         '/dashboard',
-        (route) => false,
+            (route) => false,
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -172,19 +172,19 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
                     onPressed: authProvider.isLoading ? null : _verifyOtp,
                     child: authProvider.isLoading
                         ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                Colors.white,
-                              ),
-                            ),
-                          )
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          Colors.white,
+                        ),
+                      ),
+                    )
                         : const Text(
-                            'Verify',
-                            style: TextStyle(fontSize: 16),
-                          ),
+                      'Verify',
+                      style: TextStyle(fontSize: 16),
+                    ),
                   );
                 },
               ),
@@ -192,13 +192,13 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
               Center(
                 child: _remainingSeconds > 0
                     ? Text(
-                        'Resend OTP in $_remainingSeconds seconds',
-                        style: const TextStyle(color: Colors.grey),
-                      )
+                  'Resend OTP in $_remainingSeconds seconds',
+                  style: const TextStyle(color: Colors.grey),
+                )
                     : TextButton(
-                        onPressed: _resendOtp,
-                        child: const Text('Resend OTP'),
-                      ),
+                  onPressed: _resendOtp,
+                  child: const Text('Resend OTP'),
+                ),
               ),
             ],
           ),

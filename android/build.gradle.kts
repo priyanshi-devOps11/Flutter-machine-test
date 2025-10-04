@@ -4,19 +4,15 @@ buildscript {
         google()
         mavenCentral()
     }
-    dependencies {
-        classpath'com.android.tools.build:gradle:8.1.0'
-    }
+
 }
 
 allprojects {
     repositories {
         google()
         mavenCentral()
-        maven { url 'https://jitpack.io' }
+
     }
 }
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
-}
+

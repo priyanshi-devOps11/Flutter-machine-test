@@ -6,7 +6,7 @@ void main() {
   testWidgets('Splash screen shows and navigates to Register',
       (WidgetTester tester) async {
     // Build the app
-    await tester.pumpWidget(MyApp());
+    await tester.pumpWidget(MyApp() as Widget);
 
     // Initially, we expect splash text or logo to appear
     expect(find.text('Get Calley'), findsOneWidget);
@@ -19,7 +19,7 @@ void main() {
   });
 
   testWidgets('Register screen shows form fields', (WidgetTester tester) async {
-    await tester.pumpWidget(MyApp());
+    await tester.pumpWidget(MyApp() as Widget);
 
     // Skip splash
     await tester.pump(const Duration(seconds: 3));
@@ -33,3 +33,5 @@ void main() {
     expect(find.text('Send OTP'), findsOneWidget);
   });
 }
+
+class MyApp {}

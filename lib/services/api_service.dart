@@ -1,10 +1,15 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import '../config.dart';
 import '../models/user.dart';
 import '../models/stats.dart';
 
 class ApiService {
   late final Dio _dio;
+
+  // Set this to true to use mock data (no backend needed)
+  // Set to false when you have a real backend
+  static const bool useMockData = true;
 
   ApiService() {
     _dio = Dio(BaseOptions(
@@ -33,28 +38,21 @@ class ApiService {
     _dio.options.headers.remove('Authorization');
   }
 
-  /// Register a new user
-  ///
-  /// Sample Request:
-  /// {
-  ///   "name": "John Doe",
-  ///   "email": "john@example.com",
-  ///   "phone": "9876543210"
-  /// }
-  ///
-  /// Sample Response:
-  /// {
-  ///   "success": true,
-  ///   "message": "Registration successful",
-  ///   "data": {
-  ///     "userId": "12345"
-  ///   }
-  /// }
   Future<Map<String, dynamic>> register({
     required String name,
     required String email,
     required String phone,
   }) async {
+    if (useMockData) {
+      debugPrint('🎭 Mock Register: $name, $email, $phone');
+      await Future.delayed(const Duration(seconds: 1));
+      return {
+        'success': true,
+        'message': 'Registration successful',
+        'data': {'userId': '123'}
+      };
+    }
+
     try {
       final response = await _dio.post(
         AppConfig.registerEndpoint,
@@ -70,24 +68,19 @@ class ApiService {
     }
   }
 
-  /// Send OTP to phone number
-  ///
-  /// Sample Request:
-  /// {
-  ///   "phone": "9876543210"
-  /// }
-  ///
-  /// Sample Response:
-  /// {
-  ///   "success": true,
-  ///   "message": "OTP sent successfully",
-  ///   "data": {
-  ///     "otpSent": true
-  ///   }
-  /// }
   Future<Map<String, dynamic>> sendOtp({
     required String phone,
   }) async {
+    if (useMockData) {
+      debugPrint('🎭 Mock Send OTP to: $phone');
+      await Future.delayed(const Duration(seconds: 1));
+      return {
+        'success': true,
+        'message': 'OTP sent successfully',
+        'data': {'otpSent': true}
+      };
+    }
+
     try {
       final response = await _dio.post(
         AppConfig.sendOtpEndpoint,
@@ -101,32 +94,37 @@ class ApiService {
     }
   }
 
-  /// Verify OTP
-  ///
-  /// Sample Request:
-  /// {
-  ///   "phone": "9876543210",
-  ///   "otp": "123456"
-  /// }
-  ///
-  /// Sample Response:
-  /// {
-  ///   "success": true,
-  ///   "message": "OTP verified successfully",
-  ///   "data": {
-  ///     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  ///     "user": {
-  ///       "id": "12345",
-  ///       "name": "John Doe",
-  ///       "email": "john@example.com",
-  ///       "phone": "9876543210"
-  ///     }
-  ///   }
-  /// }
   Future<Map<String, dynamic>> verifyOtp({
     required String phone,
     required String otp,
   }) async {
+    if (useMockData) {
+      debugPrint('🎭 Mock Verify OTP: $phone, $otp');
+      await Future.delayed(const Duration(seconds: 1));
+
+      // Accept any 6-digit OTP
+      if (otp.length == 6) {
+        return {
+          'success': true,
+          'message': 'OTP verified successfully',
+          'data': {
+            'token': 'mock_token_${DateTime.now().millisecondsSinceEpoch}',
+            'user': {
+              'id': '123',
+              'name': 'Test User',
+              'email': 'test@example.com',
+              'phone': phone,
+            }
+          }
+        };
+      } else {
+        return {
+          'success': false,
+          'message': 'Invalid OTP',
+        };
+      }
+    }
+
     try {
       final response = await _dio.post(
         AppConfig.verifyOtpEndpoint,
@@ -141,24 +139,27 @@ class ApiService {
     }
   }
 
-  /// Get user statistics
-  ///
-  /// Sample Response:
-  /// {
-  ///   "success": true,
-  ///   "data": {
-  ///     "totalCalls": 150,
-  ///     "pendingCalls": 25,
-  ///     "completedCalls": 100,
-  ///     "scheduledCalls": 25,
-  ///     "callsByDay": [
-  ///       {"day": "Mon", "calls": 20},
-  ///       {"day": "Tue", "calls": 35},
-  ///       {"day": "Wed", "calls": 28}
-  ///     ]
-  ///   }
-  /// }
   Future<Stats> getStats() async {
+    if (useMockData) {
+      debugPrint('🎭 Mock Get Stats');
+      await Future.delayed(const Duration(seconds: 1));
+      return Stats.fromJson({
+        'totalCalls': 150,
+        'pendingCalls': 25,
+        'completedCalls': 100,
+        'scheduledCalls': 25,
+        'callsByDay': [
+          {'day': 'Mon', 'calls': 20},
+          {'day': 'Tue', 'calls': 35},
+          {'day': 'Wed', 'calls': 28},
+          {'day': 'Thu', 'calls': 22},
+          {'day': 'Fri', 'calls': 30},
+          {'day': 'Sat', 'calls': 10},
+          {'day': 'Sun', 'calls': 5},
+        ]
+      });
+    }
+
     try {
       final response = await _dio.get(AppConfig.statsEndpoint);
       return Stats.fromJson(response.data['data']);
@@ -167,8 +168,18 @@ class ApiService {
     }
   }
 
-  /// Get user profile
   Future<User> getUserProfile() async {
+    if (useMockData) {
+      debugPrint('🎭 Mock Get User Profile');
+      await Future.delayed(const Duration(seconds: 1));
+      return User.fromJson({
+        'id': '123',
+        'name': 'Test User',
+        'email': 'test@example.com',
+        'phone': '9876543210',
+      });
+    }
+
     try {
       final response = await _dio.get(AppConfig.userProfileEndpoint);
       return User.fromJson(response.data['data']);

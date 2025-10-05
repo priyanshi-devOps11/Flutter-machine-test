@@ -31,7 +31,6 @@ class AuthProvider with ChangeNotifier {
       if (token != null && userJson != null) {
         _token = token;
         _user = User.fromJson(json.decode(userJson));
-        _apiService.setAuthToken(token);
         notifyListeners();
       }
     } catch (e) {
@@ -39,56 +38,40 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  Future<bool> register({
-    required String name,
-    required String email,
-    required String phone,
-  }) async {
+  /// Send OTP to email (used during registration)
+  Future<bool> sendOtp({required String email}) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
-      final response = await _apiService.register(
-        name: name,
-        email: email,
-        phone: phone,
-      );
+      debugPrint('Sending OTP to: $email');
+      final response = await _apiService.sendOtp(email: email);
 
       _isLoading = false;
-      notifyListeners();
 
-      return response['success'] == true;
+      if (response['success'] == true) {
+        debugPrint('OTP sent successfully');
+        notifyListeners();
+        return true;
+      } else {
+        _error = response['message'] ?? 'Failed to send OTP';
+        debugPrint('Send OTP failed: $_error');
+        notifyListeners();
+        return false;
+      }
     } catch (e) {
-      _error = e.toString();
+      _error = _parseError(e);
       _isLoading = false;
+      debugPrint('Send OTP error: $e');
       notifyListeners();
       return false;
     }
   }
 
-  Future<bool> sendOtp({required String phone}) async {
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
-
-    try {
-      final response = await _apiService.sendOtp(phone: phone);
-
-      _isLoading = false;
-      notifyListeners();
-
-      return response['success'] == true;
-    } catch (e) {
-      _error = e.toString();
-      _isLoading = false;
-      notifyListeners();
-      return false;
-    }
-  }
-
+  /// Verify OTP
   Future<bool> verifyOtp({
-    required String phone,
+    required String email,
     required String otp,
   }) async {
     _isLoading = true;
@@ -96,14 +79,26 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
 
     try {
+      debugPrint('Verifying OTP for: $email');
       final response = await _apiService.verifyOtp(
-        phone: phone,
+        email: email,
         otp: otp,
       );
 
-      if (response['success'] == true && response['data'] != null) {
-        _token = response['data']['token'];
-        _user = User.fromJson(response['data']['user']);
+      _isLoading = false;
+
+      if (response['success'] == true) {
+        debugPrint('OTP verified successfully');
+
+        // For this machine test, create a mock user since API doesn't return user data
+        _user = User(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          name: 'User',
+          email: email,
+          phone: '',
+        );
+
+        _token = 'verified_${DateTime.now().millisecondsSinceEpoch}';
 
         // Save to secure storage
         await _secureStorage.write(key: 'auth_token', value: _token);
@@ -112,18 +107,58 @@ class AuthProvider with ChangeNotifier {
           value: json.encode(_user!.toJson()),
         );
 
-        _apiService.setAuthToken(_token!);
-
-        _isLoading = false;
         notifyListeners();
         return true;
+      } else {
+        _error = response['message'] ?? 'Invalid OTP';
+        debugPrint('Verify OTP failed: $_error');
+        notifyListeners();
+        return false;
       }
+    } catch (e) {
+      _error = _parseError(e);
+      _isLoading = false;
+      debugPrint('Verify OTP error: $e');
+      notifyListeners();
+      return false;
+    }
+  }
+
+  /// Mock login (not connected to real API)
+  Future<bool> login({
+    required String email,
+    required String password,
+  }) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      // Simulate API delay
+      await Future.delayed(const Duration(seconds: 1));
+
+      // Mock successful login
+      _user = User(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        name: 'User',
+        email: email,
+        phone: '',
+      );
+
+      _token = 'login_${DateTime.now().millisecondsSinceEpoch}';
+
+      // Save to secure storage
+      await _secureStorage.write(key: 'auth_token', value: _token);
+      await _secureStorage.write(
+        key: 'user_data',
+        value: json.encode(_user!.toJson()),
+      );
 
       _isLoading = false;
       notifyListeners();
-      return false;
+      return true;
     } catch (e) {
-      _error = e.toString();
+      _error = _parseError(e);
       _isLoading = false;
       notifyListeners();
       return false;
@@ -135,12 +170,29 @@ class AuthProvider with ChangeNotifier {
     _token = null;
     await _secureStorage.delete(key: 'auth_token');
     await _secureStorage.delete(key: 'user_data');
-    _apiService.clearAuthToken();
     notifyListeners();
   }
 
   void clearError() {
     _error = null;
     notifyListeners();
+  }
+
+  /// Parse error messages to user-friendly format
+  String _parseError(dynamic error) {
+    String errorStr = error.toString();
+
+    if (errorStr.contains('SocketException') ||
+        errorStr.contains('Failed host lookup')) {
+      return 'No internet connection. Please check your network.';
+    } else if (errorStr.contains('TimeoutException')) {
+      return 'Request timed out. Please try again.';
+    } else if (errorStr.contains('FormatException')) {
+      return 'Invalid response from server.';
+    } else if (errorStr.contains('Exception:')) {
+      return errorStr.split('Exception:').last.trim();
+    }
+
+    return 'An unexpected error occurred. Please try again.';
   }
 }

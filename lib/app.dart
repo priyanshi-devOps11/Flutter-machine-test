@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'screens/splash.dart';
 import 'screens/language_select.dart';
 import 'screens/register.dart';
-import 'screens/otp_verify.dart';
+import 'screens/otp_verification_screen.dart';
 import 'screens/login.dart';
 import 'screens/home.dart';
 import 'screens/dashboard.dart';
@@ -31,7 +31,7 @@ class GetCalleyApp extends StatelessWidget {
       routes: {
         '/language': (context) => const LanguageSelectScreen(),
         '/register': (context) => const RegisterScreen(),
-        '/otp': (context) => const OtpVerifyScreen(),
+        '/otp': (context) => const OtpVerificationScreen(),
         '/login': (context) => const LoginScreen(),
         '/home': (context) => const HomeScreen(),
         '/dashboard': (context) => const DashboardScreen(),

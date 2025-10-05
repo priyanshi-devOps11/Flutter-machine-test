@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
-import '../screens/otp_verification_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -29,10 +28,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<void> _register() async {
+    // Validate form
     if (!_formKey.currentState!.validate()) {
       return;
     }
 
+    // Check terms agreement
     if (!_agreedToTerms) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -45,38 +46,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
-    final success = await authProvider.register(
-      name: _nameController.text.trim(),
+    // Send OTP to email (no register API call needed)
+    final otpSent = await authProvider.sendOtp(
       email: _emailController.text.trim(),
-      phone: _phoneController.text.trim(),
     );
 
     if (!mounted) return;
 
-    if (success) {
-      final otpSent = await authProvider.sendOtp(
-        phone: _phoneController.text.trim(),
+    if (otpSent) {
+      // Navigate to OTP verification screen with email and name
+      Navigator.pushNamed(
+        context,
+        '/otp-verification',
+        arguments: {
+          'email': _emailController.text.trim(),
+          'name': _nameController.text.trim(),
+        },
       );
-
-      if (!mounted) return;
-
-      if (otpSent) {
-        Navigator.of(context).pushNamed(
-          '/otp',
-          arguments: _phoneController.text.trim(),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(authProvider.error ?? 'Failed to send OTP'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(authProvider.error ?? 'Registration failed'),
+          content: Text(authProvider.error ?? 'Failed to send OTP'),
           backgroundColor: Colors.red,
         ),
       );
@@ -107,10 +97,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const SizedBox(height: 10),
-                  // Logo Section
                   _buildLogo(),
                   const SizedBox(height: 30),
-                  // Title
                   const Text(
                     'Create Account',
                     style: TextStyle(
@@ -130,7 +118,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 35),
-                  // Name Field
                   _buildTextField(
                     controller: _nameController,
                     label: 'Full Name',
@@ -143,7 +130,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     },
                   ),
                   const SizedBox(height: 16),
-                  // Email Field
                   _buildTextField(
                     controller: _emailController,
                     label: 'Email Address',
@@ -153,14 +139,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       if (value == null || value.isEmpty) {
                         return 'Please enter your email';
                       }
-                      if (!value.contains('@')) {
+                      if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                          .hasMatch(value)) {
                         return 'Please enter a valid email';
                       }
                       return null;
                     },
                   ),
                   const SizedBox(height: 16),
-                  // Password Field
                   _buildTextField(
                     controller: _passwordController,
                     label: 'Password',
@@ -190,10 +176,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     },
                   ),
                   const SizedBox(height: 16),
-                  // Phone Field
                   _buildPhoneField(),
                   const SizedBox(height: 20),
-                  // Terms Checkbox
                   Row(
                     children: [
                       SizedBox(
@@ -236,7 +220,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ],
                   ),
                   const SizedBox(height: 28),
-                  // Register Button
                   Consumer<AuthProvider>(
                     builder: (context, authProvider, child) {
                       return SizedBox(
@@ -278,7 +261,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     },
                   ),
                   const SizedBox(height: 20),
-                  // Login Link
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -291,7 +273,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       TextButton(
                         onPressed: () {
-                          // Navigate to login - we'll implement this later
+                          Navigator.pushNamed(context, '/login');
                         },
                         style: TextButton.styleFrom(
                           padding: EdgeInsets.zero,
@@ -504,9 +486,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ],
             ),
           ),
-          suffixIcon: Icon(
+          suffixIcon: const Icon(
             Icons.phone_android_rounded,
-            color: const Color(0xFF1976D2),
+            color: Color(0xFF1976D2),
             size: 22,
           ),
           border: OutlineInputBorder(

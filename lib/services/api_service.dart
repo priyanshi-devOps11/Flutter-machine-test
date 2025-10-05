@@ -128,4 +128,6 @@ class ApiService {
 
     return 'An unexpected error occurred. Please try again.';
   }
+
+  Future getStats() async {}
 }

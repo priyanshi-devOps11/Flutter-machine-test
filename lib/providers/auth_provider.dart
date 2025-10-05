@@ -87,10 +87,15 @@ class AuthProvider with ChangeNotifier {
 
       _isLoading = false;
 
-      if (response['success'] == true) {
+      // Check if verification was successful
+      // API returns: {"message":"OTP Verfied"} (note the typo in their API)
+      final message = response['message']?.toString().toLowerCase() ?? '';
+      if (response['success'] == true ||
+          message.contains('verif') ||
+          message.contains('success')) {
         debugPrint('OTP verified successfully');
 
-        // For this machine test, create a mock user since API doesn't return user data
+        // Create user after successful verification
         _user = User(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
           name: 'User',

@@ -91,7 +91,7 @@ class AuthProvider with ChangeNotifier {
       // API returns: {"message":"OTP Verfied"} (note the typo in their API)
       final message = response['message']?.toString().toLowerCase() ?? '';
       if (response['success'] == true ||
-          message.contains('verif') ||
+          message.contains('verify') ||
           message.contains('success')) {
         debugPrint('OTP verified successfully');
 

@@ -39,7 +39,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.get_calley"
-        minSdk = 21
+        minSdk = flutter.minSdkVersion
         targetSdk = 34
         versionCode = flutterVersionCode.toInt()
         versionName = flutterVersionName
